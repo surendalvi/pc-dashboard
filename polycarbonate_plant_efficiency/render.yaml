@@ -4,7 +4,7 @@ services:
     name: saudi-kayan-pc-digital-twin
     env: static
     buildCommand: ""  # Static site, no build steps required
-    publishPath: "."   # Serve files from the root of the repository
+    publishPath: "./polycarbonate_plant_efficiency"   # Serve files from the subdirectory
     headers:
       - path: /*
         name: Cache-Control
