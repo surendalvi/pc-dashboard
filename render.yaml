@@ -1,7 +1,8 @@
 # Render Blueprint Specification for Saudi Kayan PC Dashboard
 services:
-  - type: static
+  - type: web
     name: saudi-kayan-pc-digital-twin
+    runtime: static
     buildCommand: ""  # Static site, no build steps required
     staticPublishPath: "."  # Serve files from the root of the repository (where index.html is located)
     headers:
