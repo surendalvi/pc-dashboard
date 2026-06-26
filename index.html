@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SABIC Saudi Kayan PC - Digital Twin & Process Optimizer</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar: Historian Tag Connector (Simulator Panel) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fa-solid fa-plug-circle-bolt"></i> Historian Tags</h3>
+                <button class="toggle-btn" id="close-sidebar-btn"><i class="fa-solid fa-chevron-left"></i></button>
+            </div>
+            
+            <div class="control-mode-selector">
+                <button class="mode-btn active" id="mode-stream-btn"><i class="fa-solid fa-play"></i> Streaming</button>
+                <button class="mode-btn" id="mode-manual-btn"><i class="fa-solid fa-sliders"></i> Override</button>
+            </div>
+
+            <div class="tag-groups-container">
+                <!-- Group 1: Monomer Plant Tags -->
+                <div class="tag-group">
+                    <h4>Monomer Section (Unit 100 - 300)</h4>
+                    
+                    <div class="tag-slider-control">
+                        <label for="tag-eo-feed">
+                            <span class="tag-name">100_FT_001_EO_FEED</span>
+                            <span class="tag-val" id="val-eo-feed">22,000 kg/h</span>
+                        </label>
+                        <input type="range" id="tag-eo-feed" min="15000" max="30000" step="500" value="22000" disabled>
+                    </div>
+
+                    <div class="tag-slider-control">
+                        <label for="tag-co2-feed">
+                            <span class="tag-name">100_FT_002_CO2_FEED</span>
+                            <span class="tag-val" id="val-co2-feed">24,500 kg/h</span>
+                        </label>
+                        <input type="range" id="tag-co2-feed" min="18000" max="32000" step="500" value="24500" disabled>
+                    </div>
+
+                    <div class="tag-slider-control">
+                        <label for="tag-dmc-out">
+                            <span class="tag-name">200_FT_020_DMC_OUT</span>
+                            <span class="tag-val" id="val-dmc-out">45.0 t/h</span>
+                        </label>
+                        <input type="range" id="tag-dmc-out" min="30" max="60" step="0.5" value="45.0" disabled>
+                    </div>
+
+                    <div class="tag-slider-control">
+                        <label for="tag-hp-steam">
+                            <span class="tag-name">200_FT_ST_HP_C210</span>
+                            <span class="tag-val" id="val-hp-steam">14.8 t/h</span>
+                        </label>
+                        <input type="range" id="tag-hp-steam" min="10" max="25" step="0.1" value="14.8" disabled>
+                    </div>
+
+                    <div class="tag-slider-control">
+                        <label for="tag-rd-steam">
+                            <span class="tag-name">300_FT_ST_MP_C310</span>
+                            <span class="tag-val" id="val-rd-steam">15.4 t/h</span>
+                        </label>
+                        <input type="range" id="tag-rd-steam" min="10" max="25" step="0.1" value="15.4" disabled>
+                    </div>
+
+                    <div class="tag-slider-control">
+                        <label for="tag-c320-vac">
+                            <span class="tag-name">300_PT_C320_VAC</span>
+                            <span class="tag-val" id="val-c320-vac">22.5 kPa</span>
+                        </label>
+                        <input type="range" id="tag-c320-vac" min="15" max="45" step="0.5" value="22.5" disabled>
+                    </div>
+                </div>
+
+                <!-- Group 2: Polymer Plant Tags -->
+                <div class="tag-group">
+                    <h4>Polymer Section (Unit 400 - 500)</h4>
+
+                    <div class="tag-slider-control">
+                        <label for="tag-bpa-feed">
+                            <span class="tag-name">400_FT_001_BPA_MELT</span>
+                            <span class="tag-val" id="val-bpa-feed">28.5 t/h</span>
+                        </label>
+                        <input type="range" id="tag-bpa-feed" min="20" max="40" step="0.2" value="28.5" disabled>
+                    </div>
+
+                    <div class="tag-slider-control">
+                        <label for="tag-agit-power">
+                            <span class="tag-name">400_JI_R410_AGIT</span>
+                            <span class="tag-val" id="val-agit-power">45.0 kW</span>
+                        </label>
+                        <input type="range" id="tag-agit-power" min="30" max="60" step="0.5" value="45.0" disabled>
+                    </div>
+
+                    <div class="tag-slider-control">
+                        <label for="tag-deepvac">
+                            <span class="tag-name">500_PT_R510_DEEPVAC</span>
+                            <span class="tag-val" id="val-deepvac">0.65 mbar</span>
+                        </label>
+                        <input type="range" id="tag-deepvac" min="0.05" max="3.0" step="0.05" value="0.65" disabled>
+                    </div>
+
+                    <div class="tag-slider-control">
+                        <label for="tag-filter-dp">
+                            <span class="tag-name">500_PDT_F520_FILTER</span>
+                            <span class="tag-val" id="val-filter-dp">1.25 MPa</span>
+                        </label>
+                        <input type="range" id="tag-filter-dp" min="0.5" max="4.0" step="0.05" value="1.25" disabled>
+                    </div>
+
+                    <div class="tag-slider-control">
+                        <label for="tag-pump-torque">
+                            <span class="tag-name">500_EI_P510_TORQ</span>
+                            <span class="tag-val" id="val-pump-torque">1250 Nm</span>
+                        </label>
+                        <input type="range" id="tag-pump-torque" min="800" max="2000" step="10" value="1250" disabled>
+                    </div>
+
+                    <div class="tag-slider-control">
+                        <label for="tag-pump-rpm">
+                            <span class="tag-name">500_SE_P510_RPM</span>
+                            <span class="tag-val" id="val-pump-rpm">42.0 RPM</span>
+                        </label>
+                        <input type="range" id="tag-pump-rpm" min="20" max="60" step="0.5" value="42.0" disabled>
+                    </div>
+                </div>
+
+                <!-- Simulation Tools -->
+                <div class="tag-group">
+                    <h4>Simulation Toolkits</h4>
+                    <button class="sim-btn" id="sim-leak-btn"><i class="fa-solid fa-wind"></i> Trigger Vacuum Air Ingress</button>
+                    <button class="sim-btn" id="sim-fouling-btn"><i class="fa-solid fa-soap"></i> Trigger Reboiler C-310 Fouling</button>
+                    <button class="sim-btn" id="sim-feed-btn"><i class="fa-solid fa-triangle-exclamation"></i> Trigger Upstream Feed Starvation</button>
+                    <button class="sim-btn success" id="sim-optimize-btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Optimize (NMPC Apply)</button>
+                    <button class="sim-btn" id="sim-reset-btn"><i class="fa-solid fa-arrow-rotate-left"></i> Reset Simulation</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard View -->
+        <main class="main-content">
+            <!-- Top Navigation / Header -->
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle-btn" id="open-sidebar-btn"><i class="fa-solid fa-plug"></i></button>
+                    <div class="breadcrumbs">
+                        <span class="crumb">SABIC</span>
+                        <span class="crumb-separator">&gt;</span>
+                        <span class="crumb">SAUDI KAYAN</span>
+                        <span class="crumb-separator">&gt;</span>
+                        <span class="crumb active">POLYCARBONATE PLANT</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="time-displays">
+                        <span class="time-label">OPTIMUM TIME :</span>
+                        <span class="time-val" id="opt-time-display">04-OCT-23 01:00 AM</span>
+                        <span class="info-icon" title="Optimum Target Profile Time"><i class="fa-solid fa-circle-info"></i></span>
+                        <span class="divider">|</span>
+                        <span class="time-label">ACTUAL TIME :</span>
+                        <span class="time-val" id="act-time-display">09-JUL-24 11:00 PM</span>
+                    </div>
+                    <div class="header-icons">
+                        <span class="icon-indicator warning" title="Active Quality Warning" id="quality-alert-indicator"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                        <span class="icon-indicator" title="Production Calendar"><i class="fa-regular fa-calendar-days"></i></span>
+                        <span class="icon-indicator" title="Alarms & Notifications"><i class="fa-regular fa-bell"></i></span>
+                        <span class="icon-indicator" title="User Profile / System Settings"><i class="fa-regular fa-circle-user"></i></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Top Cards Grid (4 Columns) -->
+            <section class="top-cards-grid">
+                <!-- Card 1: Process Efficiency -->
+                <div class="metric-card" id="card-process">
+                    <div class="card-icon-container">
+                        <div class="circle-icon-inner">
+                            <i class="fa-solid fa-circle-nodes"></i>
+                        </div>
+                    </div>
+                    <div class="card-left-info">
+                        <span class="card-pct-val" id="val-process-pct">99.84 %</span>
+                        <span class="card-title">PROCESS EFFICIENCY</span>
+                    </div>
+                    <div class="card-subcard-box">
+                        <span class="sub-card-lbl">PREDICTED PRODUCTION OPPORTUNITY</span>
+                        <span class="sub-card-val" id="val-prod-opp">8.31 <span class="unit">MT/DAY</span></span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Energy Efficiency (Vibrant blue background style as template) -->
+                <div class="metric-card highlight" id="card-energy">
+                    <div class="card-icon-container highlight">
+                        <div class="circle-icon-inner">
+                            <i class="fa-solid fa-fire-flame-simple"></i>
+                        </div>
+                    </div>
+                    <div class="card-left-info highlight">
+                        <span class="card-pct-val" id="val-energy-pct">97.96 %</span>
+                        <span class="card-title">ENERGY EFFICIENCY</span>
+                    </div>
+                    <div class="card-opp-text-box">
+                        <span class="sub-card-lbl">PREDICTED ENERGY REDUCTION OPPORTUNITY</span>
+                        <span class="sub-card-val" id="val-energy-opp">251.14 <span class="unit">GJ/DAY</span></span>
+                    </div>
+                </div>
+
+                <!-- Card 3: Environmental Efficiency -->
+                <div class="metric-card" id="card-env">
+                    <div class="card-icon-container env">
+                        <div class="circle-icon-inner">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+                    </div>
+                    <div class="card-left-info">
+                        <span class="card-pct-val" id="val-env-pct">97.96 %</span>
+                        <span class="card-title">ENVIRONMENT EFFICIENCY</span>
+                    </div>
+                    <div class="card-subcard-box">
+                        <span class="sub-card-lbl">PREDICTED CO₂ REDUCTION OPPORTUNITY</span>
+                        <span class="sub-card-val" id="val-co2-opp">16.73 <span class="unit">MT/DAY</span></span>
+                    </div>
+                </div>
+
+                <!-- Card 4: Overdue Deviation (Static alerts card) -->
+                <div class="metric-card alert-card" id="card-deviations">
+                    <div class="card-icon-container warning" id="alert-glow">
+                        <div class="circle-icon-inner">
+                            <i class="fa-solid fa-triangle-exclamation" id="alert-icon"></i>
+                        </div>
+                    </div>
+                    <div class="card-left-info">
+                        <span class="card-pct-val" id="val-active-devs">0</span>
+                        <span class="card-title">ACTIVE DEVIATION</span>
+                    </div>
+                    <div class="card-subcard-box">
+                        <span class="sub-card-lbl">OVERDUE DEVIATION</span>
+                        <span class="sub-card-val" id="val-overdue-devs">0</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Layout Grid (KPI Panel & Dynamic Parameter Columns) -->
+            <section class="middle-section-grid">
+                <!-- Column 1: Performance KPIs -->
+                <div class="middle-column performance-column">
+                    <h3 class="middle-col-header">PERFORMANCE KPIs</h3>
+                    <div class="middle-col-card">
+                        <div class="kpi-grid-3x2">
+                            <!-- KPI 1 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">EXCESS STEAM CONSUMPTION (MT/h)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-perf-excess-steam">1.60</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">0.00</span>
+                                </div>
+                            </div>
+                            <!-- KPI 2 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">DPC REACTION SELECTIVITY (%)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-perf-dpc-select">98.12</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">99.20</span>
+                                </div>
+                            </div>
+                            <!-- KPI 3 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">OVERALL PLANT EFFICIENCY (%)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-perf-overall-eff">96.76</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">99.10</span>
+                                </div>
+                            </div>
+                            <!-- KPI 4 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">ENERGY SPECIFIC CONSUMPTION (GJ/t)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-perf-sec">2.41</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">2.15</span>
+                                </div>
+                            </div>
+                            <!-- KPI 5 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">PC EXTRUSION PRODUCTION (t/h)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-perf-pc-prod">31.20</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">32.50</span>
+                                </div>
+                            </div>
+                            <!-- KPI 6 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">CAPACITY UTILIZATION (%)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual single-val" id="val-perf-cap-util">96.00%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2: Predicted KPIs -->
+                <div class="middle-column predicted-column">
+                    <h3 class="middle-col-header">PREDICTED KPIs</h3>
+                    <div class="middle-col-card">
+                        <div class="kpi-grid-2x3">
+                            <!-- KPI 1 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">PREDICTED YELLOWNESS INDEX (YI)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual alert" id="val-pred-yi">1.18</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">&lt; 1.50</span>
+                                </div>
+                            </div>
+                            <!-- KPI 2 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">PREDICTED MELT FLOW INDEX (MFI)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-pred-mfi">14.22</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">15.00</span>
+                                </div>
+                            </div>
+                            <!-- KPI 3 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">GRAVITY FILM THICKNESS (mm)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-pred-film-thick">0.28</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">0.25</span>
+                                </div>
+                            </div>
+                            <!-- KPI 4 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">WETTING UNIFORMITY INDEX (WUI)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-pred-wui">0.88</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">&gt; 0.95</span>
+                                </div>
+                            </div>
+                            <!-- KPI 5 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">REBOILER C-310 FOULING (Rf)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual alert" id="val-pred-rf">0.0042</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">0.0011</span>
+                                </div>
+                            </div>
+                            <!-- KPI 6 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">DISCHARGE PUMP VOL. EFF. (%)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-pred-pump-eff">89.00</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">&gt; 95.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 3: Key Parameters -->
+                <div class="middle-column params-column">
+                    <h3 class="middle-col-header">KEY PARAMETERS - PROCESS & ENERGY</h3>
+                    <div class="middle-col-card">
+                        <div class="kpi-grid-3x3">
+                            <!-- Box 1 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">HP COLUMN REBOILER STEAM (t/h)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-param-hp-steam">14.80</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">12.50</span>
+                                </div>
+                            </div>
+                            <!-- Box 2 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">C-310 REBOILER STEAM (t/h)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-param-rd-steam">15.40</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">13.80</span>
+                                </div>
+                            </div>
+                            <!-- Box 3 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">REACTOR absolute vacuum (mbar)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual alert" id="val-param-deepvac">0.65</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">0.18</span>
+                                </div>
+                            </div>
+                            <!-- Box 4 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">HP COLUMN PRESSURE (MPa)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-param-hp-press">1.02</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">1.00</span>
+                                </div>
+                            </div>
+                            <!-- Box 5 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">LP COLUMN STEAM FLOW (t/h)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-param-lp-steam">8.90</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">8.20</span>
+                                </div>
+                            </div>
+                            <!-- Box 6 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">DISCHARGE GEAR PUMP SPEED (RPM)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-param-pump-rpm">42.00</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">38.00</span>
+                                </div>
+                            </div>
+                            <!-- Box 7 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">C-310 PROCESS REB TEMP (°C)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-param-rd-temp">208.50</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">210.00</span>
+                                </div>
+                            </div>
+                            <!-- Box 8 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">C-320 VACUUM PRESSURE (kPa)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-param-rd-vac">22.50</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">20.00</span>
+                                </div>
+                            </div>
+                            <!-- Box 9 -->
+                            <div class="kpi-box">
+                                <span class="kpi-box-title">DISCHARGE GEAR PUMP TORQUE (Nm)</span>
+                                <div class="kpi-comparison">
+                                    <span class="actual" id="val-param-pump-torque">1250</span>
+                                    <span class="divider">|</span>
+                                    <span class="target">1120</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bottom Section (Actionables & Trends) -->
+            <section class="bottom-grid">
+                <!-- Actionables Panel -->
+                <div class="actionables-panel">
+                    <h3 class="panel-header">ACTIONABLES - ENERGY & PROCESS OPTIMIZATION</h3>
+                    <div class="action-table-container">
+                        <table class="action-table">
+                            <thead>
+                                <tr>
+                                    <th>KPI IN DEVIATION</th>
+                                    <th>ROOT CAUSE</th>
+                                    <th>ACTUAL</th>
+                                    <th>OPTIMUM</th>
+                                    <th>RECOMMENDED ADVISORY ACTION</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="action-table-body">
+                                <!-- Row 1 -->
+                                <tr>
+                                    <td class="bold font-danger">Specific Steam / Excess Reboiler Load</td>
+                                    <td>High fouling resistance $R_f$ on C-310 reboilers</td>
+                                    <td id="act-row-fouling">0.0042</td>
+                                    <td id="opt-row-fouling">0.0011</td>
+                                    <td>High thermal resistance detected in Unit 300 reboiler. Initiate decoking/steam wash during next planned slot.</td>
+                                    <td><button class="action-trigger-btn" id="btn-action-wash" title="Clean Reboilers (Simulate)"><i class="fa-solid fa-soap"></i> Clean</button></td>
+                                </tr>
+                                <!-- Row 2 -->
+                                <tr>
+                                    <td class="bold font-warning">Vacuum Loss / Low Wetting Index</td>
+                                    <td>Finishing Reactor vacuum leak (air ingress)</td>
+                                    <td id="act-row-vac">0.65 mbar</td>
+                                    <td id="opt-row-vac">0.18 mbar</td>
+                                    <td>Check seal seals on guide-wire feed header. Trim motive steam flow rate dynamically to stabilize loop.</td>
+                                    <td><button class="action-trigger-btn" id="btn-action-vac" title="Seal Vacuum (Simulate)"><i class="fa-solid fa-wrench"></i> Seal</button></td>
+                                </tr>
+                                <!-- Row 3 -->
+                                <tr>
+                                    <td class="bold text-success">Specific Power / Flow Kavitation</td>
+                                    <td>High discharge gear pump speed & torque drag</td>
+                                    <td id="act-row-pump">89.0%</td>
+                                    <td id="opt-row-pump">95.0%</td>
+                                    <td>Wetting uniformity index degraded. Slightly decrease feed rate or adjust NMPC setpoint for extrusion speed.</td>
+                                    <td><button class="action-trigger-btn" id="btn-action-speed" title="Trim Speed (Simulate)"><i class="fa-solid fa-gauge-low"></i> Trim</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="actionables-footer">
+                        <span class="asset-status-lbl">ASSET STATUS : Online :</span>
+                        <div class="asset-status-badges">
+                            <div class="status-item active" id="status-u100">U100</div>
+                            <div class="status-item active" id="status-u200">U200</div>
+                            <div class="status-item active" id="status-u300">U300</div>
+                            <div class="status-item active" id="status-u400">U400</div>
+                            <div class="status-item active" id="status-u500">U500</div>
+                            <div class="status-item active" id="status-extruder">EXT</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trends & Contributors Panel -->
+                <div class="trends-panel">
+                    <div class="tabs-container">
+                        <div class="tab-btn active" id="tab-trend"><span>KEY TREND</span></div>
+                        <div class="tab-btn" id="tab-contributors"><span>CONTRIBUTORS - ENERGY</span></div>
+                    </div>
+
+                    <div class="trends-content-box">
+                        <div class="chart-header">
+                            <div class="chart-title-box">
+                                <h4 id="chart-title">YELLOWNESS INDEX (YI) SOFT SENSOR PREDICTION</h4>
+                                <i class="fa-solid fa-chevron-down chart-dropdown-icon"></i>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="chart-ctrl-btn" title="Expand Chart"><i class="fa-solid fa-expand"></i></button>
+                                <button class="chart-ctrl-btn" title="More Options"><i class="fa-solid fa-ellipsis"></i></button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="trend-chart"></canvas>
+                        </div>
+                        <div class="chart-footer-legends">
+                            <span class="legend-lbl">Legends :</span>
+                            <span class="legend-item"><span class="legend-color actual"></span> ACTUAL</span>
+                            <span class="legend-item"><span class="legend-color optimum"></span> OPTIMUM / PREDICTED</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Live Toast Alerts -->
+    <div class="toast" id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
