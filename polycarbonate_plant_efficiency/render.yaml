@@ -1,0 +1,14 @@
+# Render Blueprint Specification for Saudi Kayan PC Dashboard
+services:
+  - type: web
+    name: saudi-kayan-pc-digital-twin
+    env: static
+    buildCommand: ""  # Static site, no build steps required
+    publishPath: "."   # Serve files from the root of the repository
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: "public, max-age=3600"
+    routes:
+      - from: /*
+        to: /index.html
